@@ -1,0 +1,49 @@
+
+function strip() {
+  sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/|//g'
+}
+
+function parseNumber() {
+  grep -oE '[0-9]*[,]+[0-9]*'
+}
+
+cleanPrice() { tr '\n' ' ' |tr '\n' ' ' |strip |cut -d' ' -f1 |grep -o '[0-9]*,[0-9]*' ; }
+
+x() { pup $@ text{}; }
+
+parse(){
+  content=$(cat listings/$1)
+
+  title=$(echo $content |x h1 div |strip)
+  year=$(echo $content |x h1 div |strip |cut -d' ' -f1)
+  make=$(echo $content |x h1 div |strip |cut -d' ' -f2)
+  model=$(echo $content |x h1 div |strip |cut -d' ' -f3-)
+  miles=$(echo $content |x h2.miles |parseNumber |strip)
+  price=$(echo $content |x h3.price |cleanPrice |strip)
+  location=$(echo $content |x h2.location |cut -d'|' -f1 |strip)
+  posted=$(echo $content |x h2.location |cut -d'|' -f2 | sed -e 's/Posted//' |strip)
+  dealer=$(echo $content |x div.fsbo |grep -c Dealer)
+
+  rawDesc=$(echo $content |pup div#description text{})
+
+  echo "$1 | $title | $year | $make | $model | $miles | $price | $dealer | $posted | $location"
+}
+
+main() {
+  listings=$(ls listings/)
+
+  for listing in $listings; do
+    parse $listing
+  done
+
+  echo $listing
+
+}
+
+echo "id | title |  year | miles |  price |  dealer | posted |  location"
+
+main
+#parse 1894964
+
+
+

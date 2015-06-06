@@ -1,0 +1,6 @@
+mkdir listings
+
+for url in $(cat listing-urls); do
+  id=$(echo $url |cut -d'/' -f6)
+  curl "$url" > listings/$id
+done

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+bash get-search-results
+bash extract-listing-urls
+bash get-listings
