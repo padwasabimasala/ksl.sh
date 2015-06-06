@@ -6,5 +6,6 @@
 mkdir pages
 for page in $(seq 1 20); do
   curl "http://www.ksl.com/auto/search/index?keyword=suburban&page=$page" > pages/page$page
+  sleep 10
 done
 
