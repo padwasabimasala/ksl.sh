@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+getResultsPages() {
+  keyword=$1
+
+  mkdir -p pages
+
+  # active Next   = <a href="/auto/search/index?page=2" title="Go forward 1 page">Next »</a>
+  # inactive Next = <span style="color: gray"> | Next</span>
+
+  for page in $(seq 1 20); do
+    url="http://www.ksl.com/auto/search/index?keyword=$keyword&page=$page"
+    echo "downloading $url"
+    curl $url > pages/page$page
+    sleep 1
+  done
+}
+
+extractListingIds() {
+  # example /auto/listing/2162162?ad_cid=1
+  grep -oE '/auto\/listing\/[0-9]+' pages/page* |cut -d '/' -f5 |uniq > listing-ids
+}
+
+getListings() {
+  file=$1
+  mkdir -p listings
+
+  for id in $(cat $file); do
+    url="http://www.ksl.com/auto/listing/$id"
+    echo "downloading $id $url"
+    curl "$url" > listings/$id
+    sleep 1
+  done
+}
+
+main() {
+  searchTerm=$1
+  getResultsPages $searchTerm
+  extractListingIds
+  getListings uniq-listings
+}
+
+main suburban
