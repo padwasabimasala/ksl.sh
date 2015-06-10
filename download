@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+MAX_PAGES=20
+
 getResultsPages() {
   keyword=$1
 
@@ -8,7 +10,7 @@ getResultsPages() {
   # active Next   = <a href="/auto/search/index?page=2" title="Go forward 1 page">Next »</a>
   # inactive Next = <span style="color: gray"> | Next</span>
 
-  for page in $(seq 1 20); do
+  for page in $(seq 1 $MAX_PAGES); do
     url="http://www.ksl.com/auto/search/index?keyword=$keyword&page=$page"
     echo "downloading $url"
     curl $url > pages/page$page
