@@ -49,4 +49,4 @@ main() {
   getListings uniq-listings
 }
 
-main suburban
+main $@
