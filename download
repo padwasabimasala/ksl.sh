@@ -26,10 +26,17 @@ getListings() {
   mkdir -p listings
 
   for id in $(cat $file); do
-    url="http://www.ksl.com/auto/listing/$id"
-    echo "downloading $id $url"
-    curl "$url" > listings/$id
-    sleep 1
+    path=listings/$id
+
+    if test -f $path; then
+      echo $path exists
+    else
+      url="http://www.ksl.com/auto/listing/$id"
+      echo "downloading $id $url"
+      curl "$url" > $path
+    fi
+
+    sleep 0.05
   done
 }
 
