@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+LISTING_PAGES_DIR=tmp/listings
+
 function strip() {
   sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/|//g'
 }
@@ -13,7 +15,7 @@ cleanPrice() { tr '\n' ' ' |tr '\n' ' ' |strip |cut -d' ' -f1 |grep -o '[0-9]*,[
 x() { pup $@ text{}; }
 
 parse(){
-  content=$(cat listings/$1)
+  content=$(cat $LISTING_PAGES_DIR/$1)
 
   title=$(echo $content |x h1 div |strip)
   year=$(echo $content |x h1 div |strip |cut -d' ' -f1)
@@ -33,7 +35,7 @@ parse(){
 }
 
 main() {
-  listings=$(ls listings/)
+  listings=$(ls $LISTING_PAGES_DIR/)
 
   for listing in $listings; do
     parse $listing

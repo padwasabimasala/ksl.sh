@@ -8,7 +8,7 @@
 # 10000th page contains ads 2 days old
 # 500th page contains ads a day old
 # 100th page contains ads 8hrs old
-MAX_PAGES=3
+MAX_PAGES=50
 RESULTS_PAGES_DIR=tmp/pages
 UNIQ_LISTINGS_FILE=tmp/listing-ids
 LISTING_PAGES_DIR=tmp/listings
