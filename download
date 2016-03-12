@@ -4,11 +4,25 @@
 #
 # Usages: download [searchTerm]
 
-
-MAX_PAGES=20
+# If searching all vehicles
+# 10000th page contains ads 2 days old
+# 500th page contains ads a day old
+# 100th page contains ads 8hrs old
+MAX_PAGES=3
 RESULTS_PAGES_DIR=tmp/pages
 UNIQ_LISTINGS_FILE=tmp/listing-ids
 LISTING_PAGES_DIR=tmp/listings
+
+# Used only
+# http://www.ksl.com/auto/search/index?o_facetClicked=true&o_facetValue=Used&o_facetKey=newUsed&resetPage=true&keyword=&yearFrom=&yearTo=&priceFrom=&priceTo=&mileageFrom=&mileageTo=&zip=&miles=0&newUsed%5B%5D=Used&newUsed%5B%5D=Certified
+#
+# Owner only
+# http://www.ksl.com/auto/search/index?o_facetClicked=true&o_facetValue=For+Sale+By+Owner&o_facetKey=sellerType&resetPage=true&keyword=&yearFrom=&yearTo=&priceFrom=&priceTo=&mileageFrom=&mileageTo=&zip=&miles=0&newUsed%5B%5D=Used&newUsed%5B%5D=Certified&newUsed%5B%5D=New&sellerType%5B%5D=For+Sale+By+Owner
+#
+# Dealer only
+# http://www.ksl.com/auto/search/index?o_facetClicked=false&o_facetValue=&o_facetKey=&resetPage=true&keyword=&yearFrom=&yearTo=&priceFrom=&priceTo=&mileageFrom=&mileageTo=&zip=&miles=0&newUsed%5B%5D=Used&newUsed%5B%5D=Certified&newUsed%5B%5D=New&sellerType%5B%5D=Dealership
+#
+# http://www.ksl.com/auto/search/index?page=300&newUsed%5B%5D=Used&sellerType%5B%5D=Dealership&sellerType%5B%5D=For+Sale+By+Owner
 
 getResultsPages() {
   keyword=$1
@@ -17,7 +31,7 @@ getResultsPages() {
   # inactive Next = <span style="color: gray"> | Next</span>
 
   for pageNum in $(seq 1 $MAX_PAGES); do
-    url="http://www.ksl.com/auto/search/index?keyword=$keyword&page=$pageNum"
+    url="http://www.ksl.com/auto/search/index?&newUsed%5B%5D=Used&keyword=$keyword&page=$pageNum"
     echo "downloading $url"
     curl $url > $RESULTS_PAGES_DIR/page$pageNum
     sleep 1
@@ -26,7 +40,7 @@ getResultsPages() {
 
 extractListingIds() {
   # example /auto/listing/2162162?ad_cid=1
-  grep -oE '/auto\/listing\/[0-9]+' $RESULTS_PAGES_DIR/page* |cut -d '/' -f5 |uniq > $UNIQ_LISTINGS_FILE
+  grep -oE '/auto\/listing\/[0-9]+' $RESULTS_PAGES_DIR/page* |cut -d '/' -f6 |uniq > $UNIQ_LISTINGS_FILE
 }
 
 getListings() {
