@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 
 function strip() {
   sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/|//g'
