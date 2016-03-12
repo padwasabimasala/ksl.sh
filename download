@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
+#
+# Downloads auto listings from KSL.com
+#
+# Usages: download [searchTerm]
+
 
 MAX_PAGES=20
-RESULTS_PAGES_DIR=pages
-UNIQ_LISTINGS_FILE=listing-ids
-LISTING_PAGES_DIR=listings
+RESULTS_PAGES_DIR=tmp/pages
+UNIQ_LISTINGS_FILE=tmp/listing-ids
+LISTING_PAGES_DIR=tmp/listings
 
 getResultsPages() {
   keyword=$1
-
-  mkdir -p $RESULTS_PAGES_DIR
 
   # active Next   = <a href="/auto/search/index?page=2" title="Go forward 1 page">Next »</a>
   # inactive Next = <span style="color: gray"> | Next</span>
@@ -27,8 +30,6 @@ extractListingIds() {
 }
 
 getListings() {
-  mkdir -p $LISTING_PAGES_DIR
-
   for id in $(cat $UNIQ_LISTINGS_FILE); do
     path=$LISTING_PAGES_DIR/$id
 
@@ -45,8 +46,10 @@ getListings() {
 }
 
 main() {
+  mkdir -p $RESULTS_PAGES_DIR
+  mkdir -p $LISTING_PAGES_DIR
   searchTerm=$1
-  # getResultsPages $searchTerm
+  getResultsPages $searchTerm
   extractListingIds
   getListings
 }
