@@ -1,34 +1,36 @@
 #!/usr/bin/env bash
 
 MAX_PAGES=20
+RESULTS_PAGES_DIR=pages
+UNIQ_LISTINGS_FILE=listing-ids
+LISTING_PAGES_DIR=listings
 
 getResultsPages() {
   keyword=$1
 
-  mkdir -p pages
+  mkdir -p $RESULTS_PAGES_DIR
 
   # active Next   = <a href="/auto/search/index?page=2" title="Go forward 1 page">Next »</a>
   # inactive Next = <span style="color: gray"> | Next</span>
 
-  for page in $(seq 1 $MAX_PAGES); do
-    url="http://www.ksl.com/auto/search/index?keyword=$keyword&page=$page"
+  for pageNum in $(seq 1 $MAX_PAGES); do
+    url="http://www.ksl.com/auto/search/index?keyword=$keyword&page=$pageNum"
     echo "downloading $url"
-    curl $url > pages/page$page
+    curl $url > $RESULTS_PAGES_DIR/page$pageNum
     sleep 1
   done
 }
 
 extractListingIds() {
   # example /auto/listing/2162162?ad_cid=1
-  grep -oE '/auto\/listing\/[0-9]+' pages/page* |cut -d '/' -f5 |uniq > listing-ids
+  grep -oE '/auto\/listing\/[0-9]+' $RESULTS_PAGES_DIR/page* |cut -d '/' -f5 |uniq > $UNIQ_LISTINGS_FILE
 }
 
 getListings() {
-  file=$1
-  mkdir -p listings
+  mkdir -p $LISTING_PAGES_DIR
 
-  for id in $(cat $file); do
-    path=listings/$id
+  for id in $(cat $UNIQ_LISTINGS_FILE); do
+    path=$LISTING_PAGES_DIR/$id
 
     if test -f $path; then
       echo $path exists
@@ -44,9 +46,9 @@ getListings() {
 
 main() {
   searchTerm=$1
-  getResultsPages $searchTerm
+  # getResultsPages $searchTerm
   extractListingIds
-  getListings uniq-listings
+  getListings
 }
 
 main $@
